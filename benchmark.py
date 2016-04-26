@@ -81,6 +81,28 @@ def generate_python_code(root, nodes, children):
     return python_code
 
 
+# Derecursified traversal (we deal with the stack ourselves)
+
+def derecursified_traversal(root, children):
+    genealogy = [[root, 0, 0]]
+
+    while True:
+        node, position, accu = genealogy[-1]
+
+        if position < len(children[node]):
+            child = children[node][position]
+            genealogy.append([child, 0, 0])
+        elif position == len(children[node]):
+            genealogy.pop()
+
+            if len(genealogy) == 0:
+                return accu + 1
+
+            genealogy[-1][1] += 1
+            genealogy[-1][2] += accu + 1
+        else:
+            assert(False)
+
 
 
 # Make one experiment
@@ -139,7 +161,20 @@ def make_experiment():
 
     assert (result_traversal == result_run)
 
-    return nb_nodes, duration_traversal, duration_run
+
+    # Derecursified traversal
+
+    t0 = time.time()
+    result_derecursified = derecursified_traversal(root, children)
+    duration_derecursified = time.time() - t0
+    if debug:
+        print('Derecursified traversal result : %d'%result_derecursified)
+        print('Derecursified traversal took %f µs.'%(duration_derecursified*1000))
+
+    assert (result_traversal == result_derecursified)
+
+
+    return nb_nodes, duration_traversal, duration_run, duration_derecursified
 
 
 # Make several experiments
@@ -148,12 +183,14 @@ nb_exp = 1000
 nb_nodes_list = []
 duration_traversal_list = []
 duration_run_list = []
+duration_derecursified_list = []
 for i in range(nb_exp):
-    nb_nodes, duration_traversal, duration_run = make_experiment()
+    nb_nodes, duration_traversal, duration_run, duration_derecursified = make_experiment()
 
     nb_nodes_list.append(nb_nodes)
     duration_traversal_list.append(duration_traversal)
     duration_run_list.append(duration_run)
+    duration_derecursified_list.append(duration_derecursified)
 
     sys.stdout.write('.')
     sys.stdout.flush()
@@ -168,7 +205,8 @@ plt.ylabel('Execution time in seconds')
 plt.xlabel('Number of nodes')
 scat_tr = plt.scatter(nb_nodes_list, duration_traversal_list, color='b')
 scat_run = plt.scatter(nb_nodes_list, duration_run_list, color='g')
-plt.legend((scat_tr, scat_run), ('Dynamic', 'Hard-coded'))
+scat_derec = plt.scatter(nb_nodes_list, duration_derecursified_list, color='r')
+plt.legend((scat_tr, scat_run, scat_derec), ('Dynamic', 'Hard-coded', 'Derecursified'))
 #max_duration = max(max(duration_traversal_list), max(duration_run_list))
 max_nb_nodes = max(nb_nodes_list)
 axes = plt.gca()
