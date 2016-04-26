@@ -141,6 +141,9 @@ def make_experiment():
 
     return nb_nodes, duration_traversal, duration_run
 
+
+# Make several experiments
+
 nb_exp = 1000
 nb_nodes_list = []
 duration_traversal_list = []
@@ -156,13 +159,16 @@ for i in range(nb_exp):
     sys.stdout.flush()
 sys.stdout.write('\n')
 
+
+# Plot the results
+
 fig = plt.figure()
-plt.title('Traversal duration vs run duration for %d experiments'%nb_exp)
+plt.title('Dynamic traversal duration vs hard-coded traversal duration for %d graphs'%nb_exp)
 plt.ylabel('Execution time in seconds')
 plt.xlabel('Number of nodes')
 scat_tr = plt.scatter(nb_nodes_list, duration_traversal_list, color='b')
 scat_run = plt.scatter(nb_nodes_list, duration_run_list, color='g')
-plt.legend((scat_tr, scat_run), ('Traversal', 'Run'))
+plt.legend((scat_tr, scat_run), ('Dynamic', 'Hard-coded'))
 #max_duration = max(max(duration_traversal_list), max(duration_run_list))
 max_nb_nodes = max(nb_nodes_list)
 axes = plt.gca()
