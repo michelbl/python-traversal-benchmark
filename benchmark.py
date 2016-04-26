@@ -25,7 +25,7 @@ print('Mean number of nodes : %f'%(distribution_norm/(1-distribution_norm)))
 assert(distribution_norm < 0.99), 'Be careful with distribution norms close to 1 !'
 
 
-# Generate graph
+# Generate tree
 
 def generate_node(nodes):
     begining = True
@@ -47,7 +47,7 @@ def generate_children(node, nodes, children):
     children[node] = children_list
 
 
-# Graph traversal
+# Recursive tree traversal
 
 def traversal(node, nodes, children):
     accu = 0
@@ -109,7 +109,7 @@ def derecursified_traversal(root, children):
 
 def make_experiment():
 
-    # Generate graph
+    # Generate tree
 
     begining = True
     nb_nodes = 0
@@ -123,17 +123,17 @@ def make_experiment():
         nb_nodes = len(nodes)
 
     if debug:
-        print('The graph has %d nodes.'%nb_nodes)
+        print('The tree has %d nodes.'%nb_nodes)
 
 
-    # Graph traversal
+    # Recursive tree traversal
 
     t0 = time.time()
     result_traversal = traversal(root, nodes, children)
     duration_traversal = time.time() - t0
     if debug:
-        print('Graph traversal result : %d'%result_traversal)
-        print('Graph traversal took %f µs.'%(duration_traversal*1000))
+        print('Recursive traversal result : %d'%result_traversal)
+        print('Recursive traversal took %f µs.'%(duration_traversal*1000))
 
 
     # Generate python code
@@ -200,7 +200,7 @@ sys.stdout.write('\n')
 # Plot the results
 
 fig = plt.figure()
-plt.title('Dynamic traversal duration vs hard-coded traversal duration for %d graphs'%nb_exp)
+plt.title('Dynamic traversal duration vs hard-coded traversal duration for %d trees'%nb_exp)
 plt.ylabel('Execution time in seconds')
 plt.xlabel('Number of nodes')
 scat_tr = plt.scatter(nb_nodes_list, duration_traversal_list, color='b')
